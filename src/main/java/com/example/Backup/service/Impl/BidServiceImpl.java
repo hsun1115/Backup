@@ -45,7 +45,7 @@ public class BidServiceImpl implements BidService {
             UpdateWrapper<Bid> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("job_id", id);
             Bid newB = new Bid();
-            newB.setBuyer_id(bid.getBuyer_id());
+            newB.setBidder_id(bid.getBidder_id());
             newB.setBid_time(bid.getBid_time());
             newB.setIs_win(bid.getIs_win());
             newB.setPrice(bid.getPrice());
@@ -114,7 +114,7 @@ public class BidServiceImpl implements BidService {
 //        jobService.updateJobStatus(id, JobStatus.ASSIGNED);
         Winner winner = new Winner();
         winner.setJob_id(res.getJob_id());
-        winner.setBuyer_id(res.getBuyer_id());
+        winner.setBuyer_id(res.getBidder_id());
         winner.setPrice(res.getPrice());
         winner.setStatus(JobStatus.ASSIGNED);
         //winner.setPoster_id(j.getPoster_id());

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.Backup.dao.JobDao;
 import com.example.Backup.entities.jobs.Job;
 
+import com.example.Backup.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,46 +31,40 @@ public class JobService{
     }
 
     public Job getById(Long id) {
-        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("job_id", id);
-        Job res = jobDao.selectOne(queryWrapper);
-        if (null == res) {
-            //logger.debug("no data found");
-        }
-        return res;
+        return jobDao.selectById(id);
     }
 
-    public Job updateJobById(Long id, Job job) {
-        if (null == id) {
+    public int updateJobById(Long id, Job job) {
+        int i;
+        if (null == id || job == null) {
             throw new NullPointerException();
         } else {
             UpdateWrapper<Job> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("job_id", id);
             Job newJ = new Job();
             newJ.setJob_info(job.getJob_info());
-//            newJ.setDDL(job.getDDL());
+            newJ.setDdl(job.getDdl());
             newJ.setStatus(job.getStatus());
             newJ.setPoster_id(job.getPoster_id());
-            jobDao.update(newJ,updateWrapper);
+            i = jobDao.update(newJ,updateWrapper);
         }
-        return job;
+        System.out.println(i);
+        return i;
     }
 
     public void updateJobStatus(Long id, String status) {
-        if (null == id) {
+        if (null == id || status == null || status.equals("")) {
             throw new NullPointerException();
         }
         UpdateWrapper<Job> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("job_id", id);
-        Job newJob = new Job();
-        newJob.setStatus(status);
-        jobDao.update(newJob, updateWrapper);
+        Job existJob = jobDao.selectById(id);
+        existJob.setStatus(status);
+        jobDao.update(existJob, updateWrapper);
     }
 
     public void deleteJobById(Long id) {
-        QueryWrapper<Job> qw = new QueryWrapper<>();
-        qw.eq("job_id", id);
-        jobDao.delete(qw);
+        jobDao.deleteById(id);
     }
 
     public Long count() {

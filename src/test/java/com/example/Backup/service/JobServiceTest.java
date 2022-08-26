@@ -1,6 +1,6 @@
 package com.example.Backup.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.Backup.dao.JobDao;
 import com.example.Backup.entities.jobs.Job;
 import com.example.Backup.service.job.JobService;
@@ -19,7 +19,7 @@ import java.util.List;
 @SpringBootTest
 public class JobServiceTest {
     @Mock
-    private JobDao jobDao;
+    private JobDao jobRepository;
     @InjectMocks
     private JobService jobService;
 
@@ -32,7 +32,7 @@ public class JobServiceTest {
         job.setJob_info("this is a new job");
         job.setPoster_id(1000L);
         job.setStatus(JobStatus.DEFINED);
-        PowerMockito.when(jobDao.insert(job)).thenReturn(1);
+        PowerMockito.when(jobRepository.insert(job)).thenReturn(1);
         Job mock = jobService.postJob(job);
         Assert.assertEquals(mock.getJob_info(), job.getJob_info());
     }
@@ -41,7 +41,7 @@ public class JobServiceTest {
     public void testSelectById() {
         Job job1 = new Job();
         job1.setJob_id(1L);
-        PowerMockito.when(jobDao.selectOne(Mockito.anyObject())).thenReturn(job1);
+        PowerMockito.when(jobRepository.selectById(Mockito.anyObject())).thenReturn(job1);
         Job mock = jobService.getById(1L);
         Assert.assertEquals(job1, mock);
     }
@@ -55,8 +55,22 @@ public class JobServiceTest {
         List<Job> list = new ArrayList<>();
         list.add(job1);
         list.add(job2);
-        PowerMockito.when(jobDao.selectList(Mockito.anyObject())).thenReturn(list);
+        PowerMockito.when(jobRepository.selectList(Mockito.anyObject())).thenReturn(list);
         List<Job> mock = jobService.getAllJobs();
         Assert.assertEquals(2, mock.size());
+    }
+
+    @Test
+    public void testUpdateJob() {
+        Job job = new Job();
+        job.setStatus(JobStatus.BIDING);
+        job.setJob_id(123L);
+        job.setJob_info("update");
+        UpdateWrapper<Job> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("job_id", 123L);
+        PowerMockito.when(jobRepository.selectById(Mockito.anyObject())).thenReturn(job);
+        PowerMockito.when(jobRepository.update(Mockito.any(), Mockito.any())).thenReturn(1);
+        int num = jobService.updateJobById(123L, job);
+        Assert.assertEquals(1, num);
     }
 }

@@ -11,15 +11,16 @@ import java.util.List;
 
 @RestController
 public class JobController {
-    private static final Logger logger = LogManager.getLogger(JobController.class);
+    //private static final Logger logger = LogManager.getLogger(JobController.class);
 
     @Autowired
     JobService jobService;
 
     @PostMapping("intuit/job/postjob/")
-    public void postJob(@RequestBody Job job) {
+    public String postJob(@RequestBody Job job) {
         jobService.postJob(job);
-        logger.debug("job added!");
+        //logger.debug("job added!");
+        return "Job added with details: " + job;
     }
 
     @GetMapping("intuit/job/findjob/{id}")
@@ -27,7 +28,7 @@ public class JobController {
     public Job getByJobId(@PathVariable Long id) {
         Job j = jobService.getById(id);
         if (null == j) {
-            logger.debug("no job founded");
+            //logger.debug("no job founded");
         }
         return j;
     }
@@ -41,8 +42,9 @@ public class JobController {
 
     @PostMapping("intuit/job/update/{id}")
     @ResponseBody
-    public Job updateJob(@PathVariable Long id, @RequestBody Job job) {
-        return jobService.updateJobById(id, job);
+    public int updateJob(@PathVariable Long id, @RequestBody Job job) {
+        int i = jobService.updateJobById(id, job);
+        return i;
     }
 
     @DeleteMapping("intuit/job/delete/{id}")
